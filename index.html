@@ -647,7 +647,7 @@ $('sync').onclick=async()=>{
  const b=$('sync'),m=$('syncmsg'),ic=$('syncicon');
  b.disabled=true;m.textContent='Checking occasions.bmw.nl…';ic.style.animation='spin 1s linear infinite';
  try{
-   const be=(await fetch('backend.txt',{cache:'no-store'}).then(x=>x.ok?x.text():'').catch(()=>'')).trim();if(!be){m.textContent='Server offline — try again later';b.disabled=false;ic.style.animation='';return;}await fetch(be+'/syncbg',{mode:'no-cors',cache:'no-store'});m.textContent='✓ Sync started — new cars appear in a few minutes; page auto-refreshes.';ic.style.animation='';setTimeout(()=>location.reload(),180000);
+   const v0=(await fetch('version.txt?t='+Date.now(),{cache:'no-store'}).then(x=>x.ok?x.text():'').catch(()=>'')).trim();const be=(await fetch('backend.txt',{cache:'no-store'}).then(x=>x.ok?x.text():'').catch(()=>'')).trim();if(!be){m.textContent='server offline';b.disabled=false;ic.style.animation='';return;}await fetch(be+'/syncbg',{mode:'no-cors',cache:'no-store'});m.textContent='syncing…';const t0=Date.now();const P=setInterval(async()=>{const s=Math.floor((Date.now()-t0)/1000);m.textContent='syncing '+Math.floor(s/60)+':'+('0'+s%60).slice(-2);if(s>600){clearInterval(P);m.textContent='still working — refresh soon';ic.style.animation='';b.disabled=false;return;}const v=(await fetch('version.txt?t='+Date.now(),{cache:'no-store'}).then(x=>x.ok?x.text():'').catch(()=>'')).trim();if(v&&v!==v0){clearInterval(P);m.textContent='updated ✓';location.reload();}},8000);
  }catch(e){m.textContent='Sync failed (server offline?)';b.disabled=false;ic.style.animation='';}
 };
 $('cmp').onclick=()=>{order=DATA.cars.filter(c=>sel.has(c.id)).map(c=>DATA.cars.indexOf(c));openCompare();};

@@ -157,12 +157,12 @@
  @media(max-width:1180px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
  @media(max-width:900px){.layout{grid-template-columns:1fr}.side{position:static;max-height:none}.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
  @media(max-width:560px){.grid{grid-template-columns:1fr!important}}
- .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;transition:.12s;position:relative}
+ .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.05);cursor:pointer;transition:box-shadow .12s,border-color .12s,transform .12s;position:relative;content-visibility:auto;contain-intrinsic-size:auto 430px}
  .card:hover{box-shadow:0 6px 20px rgba(0,0,0,.1);transform:translateY(-2px)}
  .card.sel{outline:3px solid var(--bmw);outline-offset:-3px}
  .card.draggable{cursor:grab}.card.dragging{opacity:.45}
  .cbtns{position:absolute;top:10px;left:10px;z-index:5;display:flex;gap:7px}
- .star,.dislike{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#16181d;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.14s;box-shadow:0 2px 10px rgba(0,0,0,.22)}
+ .star,.dislike{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.97);color:#16181d;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.14s;box-shadow:0 2px 10px rgba(0,0,0,.22)}
  .star.on{background:#ffc400;color:#fff}
  .dislike{font-size:17px}.dislike.on{background:#e5342a;color:#fff}
  .star:hover,.dislike:hover{transform:scale(1.08)}
@@ -172,7 +172,7 @@
  .ctitle:hover{text-decoration:underline}
  .cprow{display:flex;align-items:baseline;gap:8px;margin-top:3px;flex-wrap:wrap}
  .cprice{color:#fff;font-size:21px;font-weight:800;letter-spacing:-.5px;text-shadow:0 2px 8px rgba(0,0,0,.5)}
- .cocc{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#16181d;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
+ .cocc{background:rgba(255,255,255,.96);color:#16181d;font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:20px;white-space:nowrap;flex:0 0 auto}
  .cimg .pbtrack{position:absolute;left:0;right:0;bottom:0;height:5px;border-radius:0;z-index:5}
  .cimg .pbdot{width:13px;height:13px;border-width:2.5px}
  .card.disliked{opacity:.55}.card.disliked:hover{opacity:.8}.card.disliked .ctitle,.card.disliked .cprice{text-decoration:line-through;text-decoration-thickness:2px}.card.disliked .cimg img{filter:grayscale(.6)}
@@ -214,7 +214,7 @@
  .cimg img{width:100%;height:100%;object-fit:cover;display:block}
  .ptag{position:absolute;left:10px;bottom:10px;background:rgba(12,14,18,.82);color:#fff;font-weight:700;font-size:15px;padding:5px 11px;border-radius:8px}
  .pdrop{background:#e5342a;color:#fff;font-weight:800;font-size:11px;padding:3px 8px;border-radius:20px;white-space:nowrap}
- .selbox{position:absolute;top:10px;right:10px;z-index:5;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:none;box-shadow:0 2px 10px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#c2c7d0;cursor:pointer;transition:.14s}
+ .selbox{position:absolute;top:10px;right:10px;z-index:5;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.97);border:none;box-shadow:0 2px 10px rgba(0,0,0,.22);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#c2c7d0;cursor:pointer;transition:.14s}
  .selbox:hover{color:#8d949f;transform:scale(1.08)}
  .card.sel .selbox{background:var(--bmw);color:#fff}
  .cbody{padding:11px 13px 13px}
@@ -577,7 +577,7 @@ const im=img1(c);
  const rz=(reasons&&reasons.length)?`<div class=reasons>${reasons.map(r=>`<span class=rtag>✗ ${esc(r)}</span>`).join('')}</div>`:'';
  const bar=(c.peerN>=3&&c.priceHi>c.priceLo);
  return `<div class='card${sel.has(c.id)?' sel':''}${reasons?' excluded':''}${c.sold?' soldcard':''}${disliked.has(c.id)?' disliked':''}' data-id='${c.id}'>
-   <div class=cimg>${im?`<img loading=lazy src='${PH}${im.split('/').pop()}'>`:''}
+   <div class=cimg>${im?`<img loading=lazy decoding=async src='${PH}${im.split('/').pop()}'>`:''}
      ${c.sold?`<div class=soldrib>SOLD${c.soldSince?' · '+esc(c.soldSince):''}</div>`:`<div class=cbtns><div class='star${favs.has(c.id)?' on':''}' data-fav='${c.id}' title='Favourite'>${favs.has(c.id)?'★':'☆'}</div><div class='dislike${disliked.has(c.id)?' on':''}' data-dis='${c.id}' title='Not interested'>⊘</div></div><div class=selbox>✓</div>`}
      <div class=cscrim>
        <div class=cshead>
@@ -601,41 +601,78 @@ const im=img1(c);
 function renderSold(){
  const box=$('soldsection'),n=(DATA.sold||[]).length;
  $('soldn').textContent=n;$('soldbtn').disabled=n===0;
- if(!n){box.innerHTML='';box.style.display='none';return;}
+ box.dataset.built='';box.innerHTML='';box.style.display='none';
+}
+function buildSold(){ /* built lazily on first open — not at page load */
+ const box=$('soldsection');if(box.dataset.built)return;
+ const n=(DATA.sold||[]).length;if(!n)return;
  const cards=[...DATA.sold].sort((a,b)=>(b.soldSince||'').localeCompare(a.soldSince||'')).map(c=>cardHTML(c,false,null)).join('');
  box.innerHTML=`<div class=soldttlbar>Sold — no longer listed · <b>${n}</b></div><div class=soldgrid>${cards}</div>`;
- box.style.display='none';
+ box.dataset.built='1';
+}
+/* chunked rendering: only ~48 cards in the DOM at first; more stream in as you scroll.
+   Keeps the DOM small (was 40k+ nodes with 1000 cards at once = mobile scroll death). */
+let _rl=[],_rn=0,_io=null,showEx=false;const CHUNK=24;
+function _entHTML(e){
+ if(e.div)return `<div class=divider style='grid-column:1/-1'>${e.div}</div>`;
+ if(e.exbtn)return `<div class='divider exbtn' id=exbtn style='grid-column:1/-1;cursor:pointer'>${e.exbtn} — tap to show</div>`;
+ return cardHTML(e.c,false,e.rz||null,e.ai,e.rank);
+}
+function _chunk(){
+ const s=$('sentinel');if(!s)return;
+ const end=Math.min(_rn+CHUNK,_rl.length);
+ if(end<=_rn){s.style.display='none';return;}
+ s.insertAdjacentHTML('beforebegin',_rl.slice(_rn,end).map(_entHTML).join(''));
+ _rn=end;
+ s.style.display=_rn>=_rl.length?'none':'block';
+ syncSel();
 }
 function renderCards(){
+ const prev=Math.max(_rn,CHUNK*2);
  const matches=filtered();
  $('statnum').textContent=matches.length;$('statcap').textContent='of '+DATA.cars.length+' cars';
- const drag=false;
  renderSortPills();
  const aiMode=$('sort').value==='ai';
  const keep=matches.filter(c=>!disliked.has(c.id)),dis=matches.filter(c=>disliked.has(c.id));
- let h=keep.map((c,i)=>cardHTML(c,drag,null,aiMode,i+1)).join('');
- if(dis.length){h+=`<div class=divider style='grid-column:1/-1'>Not interested · ${dis.length}</div>`+dis.map((c,i)=>cardHTML(c,drag,null,aiMode,keep.length+i+1)).join('');}
+ _rl=keep.map((c,i)=>({c,ai:aiMode,rank:i+1}));
+ if(dis.length){_rl.push({div:`Not interested · ${dis.length}`});dis.forEach((c,i)=>_rl.push({c,ai:aiMode,rank:keep.length+i+1}));}
  if(anyFilterActive()){
    const ex=excludedCars();
    if(ex.length){
-     h+=`<div class=divider style='grid-column:1/-1'>Filtered out · ${ex.length}</div>`;
-     h+=ex.map(c=>cardHTML(c,false,failReasons(c),false)).join('');
+     if(showEx){_rl.push({div:`Filtered out · ${ex.length}`});ex.forEach(c=>_rl.push({c,rz:failReasons(c)}));}
+     else _rl.push({exbtn:`Filtered out · ${ex.length}`});
    }
  }
- $('cards').innerHTML=h||"<div class=emptystate><div class=emptytitle>No cars match</div><div class=emptysub>Try removing a filter or two.</div></div>";
- $('cards').querySelectorAll('.card').forEach(el=>el.onclick=()=>{if(performance.now()-lastDrop<220)return;toggle(el.dataset.id);});
- $('cards').querySelectorAll('.star').forEach(el=>el.onclick=e=>{e.stopPropagation();toggleFav(el.dataset.fav);});
- $('cards').querySelectorAll('.dislike').forEach(el=>el.onclick=e=>{e.stopPropagation();toggleDislike(el.dataset.dis);});
- $('cards').querySelectorAll('.cnote').forEach(el=>{el.onclick=e=>e.stopPropagation();el.oninput=()=>setNote(el.dataset.note,el.value);});
+ _rn=0;
+ $('cards').innerHTML=_rl.length?"<div id=sentinel style='grid-column:1/-1;height:1px'></div>":"<div class=emptystate><div class=emptytitle>No cars match</div><div class=emptysub>Try removing a filter or two.</div></div>";
+ while(_rn<Math.min(prev,_rl.length))_chunk();
+ if(_rl.length){
+   if(!_io)_io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting))_chunk();},{rootMargin:'1400px'});
+   _io.disconnect();const s=$('sentinel');if(s)_io.observe(s);
+ }
  renderChips();updateBadges();updateFavToggle();stateToHash();
 }
+/* one delegated listener instead of thousands of per-card handlers */
+$('cards').addEventListener('click',e=>{
+ const st=e.target.closest('.star');if(st){e.stopPropagation();toggleFav(st.dataset.fav);return;}
+ const dk=e.target.closest('.dislike');if(dk){e.stopPropagation();toggleDislike(dk.dataset.dis);return;}
+ if(e.target.closest('.cnote')||e.target.closest('a'))return;
+ if(e.target.closest('#exbtn')){showEx=true;renderCards();return;}
+ const card=e.target.closest('.card');
+ if(card){if(performance.now()-lastDrop<220)return;toggle(card.dataset.id);}
+});
+$('cards').addEventListener('input',e=>{const n=e.target.closest('.cnote');if(n)setNote(n.dataset.note,n.value);});
+/* scroll fallback: guarantees streaming even if IntersectionObserver misbehaves */
+let _st=0;
+addEventListener('scroll',()=>{const now=Date.now();if(now-_st<120)return;_st=now;const s=$('sentinel');if(s&&s.style.display!=='none'&&s.getBoundingClientRect().top<innerHeight+1400)_chunk();},{passive:true});
 function toggle(id){ sel.has(id)?sel.delete(id):sel.add(id); syncSel(); }
 function syncSel(){
  $('cards').querySelectorAll('.card').forEach(el=>el.classList.toggle('sel',sel.has(el.dataset.id)));
  $('cmp').disabled=sel.size<1; $('cmp').textContent=`Compare (${sel.size})`;
  const fab=$('cmpfab');if(fab){fab.textContent=`Compare (${sel.size})`;fab.classList.toggle('show',sel.size>0);}
 }
-['sort','fpano','fdrop','priceMin','priceMax','kmMin','kmMax'].forEach(id=>$(id).addEventListener('input',renderCards));
+let _rdt;const _rdeb=()=>{clearTimeout(_rdt);_rdt=setTimeout(renderCards,120);};
+['sort','fpano','fdrop','priceMin','priceMax','kmMin','kmMax'].forEach(id=>$(id).addEventListener('input',_rdeb));
 $('sort').addEventListener('change',()=>{try{localStorage.setItem(SORTK,$('sort').value);}catch(e){}});
 function clearAll(){fModels.clear();fYears.clear();fColours.clear();fWheels.clear();fDAs.clear();fPAs.clear();fPkgs.clear();$('fpano').checked=false;$('fdrop').checked=false;fDealers.clear();['priceMin','priceMax','kmMin','kmMax'].forEach(id=>$(id).value='');
  var ft=$('favtoggle');if(ft)ft.classList.remove('on');
@@ -732,7 +769,7 @@ $('sharebtn').onclick=()=>{stateToHash();const url=location.href;if(navigator.cl
 (function(){const _st=hashToState();if(_st)applyState(_st);})();
 renderCards();syncSel();renderSold();
 $('mfilters').onclick=()=>{const on=$('mfilters').classList.toggle('open');$('accgroup').classList.toggle('open',on);};
-$('soldbtn').onclick=()=>{const b=$('soldbtn');if(b.disabled)return;const on=b.classList.toggle('on');$('cards').style.display=on?'none':'grid';$('soldsection').style.display=on?'block':'none';window.scrollTo({top:0,behavior:'smooth'});};
+$('soldbtn').onclick=()=>{const b=$('soldbtn');if(b.disabled)return;const on=b.classList.toggle('on');if(on)buildSold();$('cards').style.display=on?'none':'grid';$('soldsection').style.display=on?'block':'none';window.scrollTo({top:0,behavior:'smooth'});};
 document.querySelectorAll('.acc .fgh').forEach(h=>{
  h.addEventListener('click',()=>{const acc=h.parentElement,b=acc.querySelector('.fgb');
   if(acc.classList.contains('open')){b.style.maxHeight=b.scrollHeight+'px';requestAnimationFrame(()=>{acc.classList.remove('open');b.style.maxHeight='0';});}

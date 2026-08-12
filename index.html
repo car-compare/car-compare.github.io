@@ -388,15 +388,35 @@ const fDealers=new Set();
 const SORTK='bmwSort_v1';
 let lastDrop=0;
 const favs=new Set((()=>{try{return JSON.parse(localStorage.getItem('bmwFavs')||'[]');}catch(e){return [];}})());
-function saveFavs(){try{localStorage.setItem('bmwFavs',JSON.stringify([...favs]));}catch(e){}}
+function saveFavs(){try{localStorage.setItem('bmwFavs',JSON.stringify([...favs]));}catch(e){}syncPush();}
 function toggleFav(id){favs.has(id)?favs.delete(id):favs.add(id);saveFavs();renderCards();}
 function favOn(){const b=$('favtoggle');return !!(b&&b.classList.contains('on'));}
 function updateFavToggle(){const b=$('favtoggle');if(b){const t=b.querySelector('.fnum');if(t)t.textContent=favs.size;b.classList.toggle('has',favs.size>0);}}
 const disliked=new Set((()=>{try{return JSON.parse(localStorage.getItem('bmwDislikes')||'[]');}catch(e){return [];}})());
-function saveDislikes(){try{localStorage.setItem('bmwDislikes',JSON.stringify([...disliked]));}catch(e){}}
+function saveDislikes(){try{localStorage.setItem('bmwDislikes',JSON.stringify([...disliked]));}catch(e){}syncPush();}
 function toggleDislike(id){disliked.has(id)?disliked.delete(id):disliked.add(id);saveDislikes();renderCards();}
 const notes=(()=>{try{return JSON.parse(localStorage.getItem('bmwNotes')||'{}');}catch(e){return {};}})();
-function setNote(id,v){if(v&&v.trim())notes[id]=v;else delete notes[id];try{localStorage.setItem('bmwNotes',JSON.stringify(notes));}catch(e){}}
+function setNote(id,v){if(v&&v.trim())notes[id]=v;else delete notes[id];try{localStorage.setItem('bmwNotes',JSON.stringify(notes));}catch(e){}syncPush();}
+/* ---- cross-device sync of favs / dislikes / notes via the Mac backend ----
+   local (Mac-served) app hits /state same-origin; prod (static Pages) uses the tunnel from backend.txt. */
+let SB=null,_syncT,_syncV=-1,_applying=false;
+function _syncWrite(){try{localStorage.setItem('bmwFavs',JSON.stringify([...favs]));localStorage.setItem('bmwDislikes',JSON.stringify([...disliked]));localStorage.setItem('bmwNotes',JSON.stringify(notes));}catch(e){}}
+function _syncApply(s){
+ if(!s||typeof s.v!=='number'||s.v===_syncV)return;
+ _syncV=s.v;_applying=true;
+ favs.clear();(s.favs||[]).forEach(x=>favs.add(x));
+ disliked.clear();(s.disliked||[]).forEach(x=>disliked.add(x));
+ for(const k in notes)delete notes[k];Object.assign(notes,s.notes||{});
+ _syncWrite();_applying=false;
+ if(window.renderCards)renderCards();
+}
+async function syncPull(){if(SB===null)return;try{const s=await fetch(SB+'/state?t='+Date.now(),{cache:'no-store'}).then(x=>x.ok?x.json():null);_syncApply(s);}catch(e){}}
+function syncPush(){if(SB===null||_applying)return;clearTimeout(_syncT);_syncT=setTimeout(async()=>{try{const s=await fetch(SB+'/state',{method:'POST',cache:'no-store',body:JSON.stringify({favs:[...favs],disliked:[...disliked],notes})}).then(x=>x.ok?x.json():null);if(s&&typeof s.v==='number')_syncV=s.v;}catch(e){}},600);}
+async function syncInit(){
+ try{const r=await fetch('/state?t='+Date.now(),{cache:'no-store'});if(r.ok){SB='';_syncApply(await r.json());}}catch(e){}
+ if(SB===null){try{const be=(await fetch('backend.txt',{cache:'no-store'}).then(x=>x.ok?x.text():'')).trim();if(be){SB=be;await syncPull();}}catch(e){}}
+ if(SB!==null){addEventListener('visibilitychange',()=>{if(!document.hidden)syncPull();});addEventListener('focus',syncPull);}
+}
 function collectState(){return {m:[...fModels],s:$('sort').value,c:[...fColours],w:[...fWheels],y:[...fYears],da:[...fDAs],pa:[...fPAs],pk:[...fPkgs],dl:[...fDealers],pn:$('fpano').checked?1:0,dr:$('fdrop').checked?1:0,pmin:$('priceMin').value,pmax:$('priceMax').value,kmin:$('kmMin').value,kmax:$('kmMax').value};}
 function isDefault(st){return !(st.m.length||st.c.length||st.w.length||st.y.length||st.da.length||st.pa.length||st.pk.length||st.dl.length||st.pn||st.dr||st.pmin||st.pmax||st.kmin||st.kmax||st.s!=='ai');}
 function stateToHash(){try{const st=collectState();if(isDefault(st)){history.replaceState(null,'',location.pathname);return;}history.replaceState(null,'','#v='+btoa(encodeURIComponent(JSON.stringify(st))));}catch(e){}}
@@ -768,7 +788,7 @@ buildFilters();
 $('favtoggle').onclick=()=>{$('favtoggle').classList.toggle('on');renderCards();};
 $('sharebtn').onclick=()=>{stateToHash();const url=location.href;if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(()=>toast('Link copied ✓')).catch(()=>toast('Copy failed'));}else{toast('Copy failed');}};
 (function(){const _st=hashToState();if(_st)applyState(_st);})();
-renderCards();syncSel();renderSold();
+renderCards();syncSel();renderSold();syncInit();
 $('mfilters').onclick=()=>{const on=$('mfilters').classList.toggle('open');$('accgroup').classList.toggle('open',on);};
 $('soldbtn').onclick=()=>{const b=$('soldbtn');if(b.disabled)return;const on=b.classList.toggle('on');if(on)buildSold();$('cards').style.display=on?'none':'grid';$('soldsection').style.display=on?'block':'none';window.scrollTo({top:0,behavior:'smooth'});};
 document.querySelectorAll('.acc .fgh').forEach(h=>{
